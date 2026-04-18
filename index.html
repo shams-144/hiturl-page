@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HitUrl — Get Your Smart Link</title>
+  <meta name="description" content="Convert messy URLs into short, trackable smart links. Custom domains, advanced analytics, QR codes, and bio pages — all in one platform." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:       #1a56db;
+      --blue-deep:  #0d3bb2;
+      --blue-light: #3b82f6;
+      --indigo:     #4338ca;
+      --navy:       #0a1628;
+      --navy-mid:   #0f2040;
+      --white:      #ffffff;
+      --gray-50:    #f8fafc;
+      --gray-100:   #f1f5f9;
+      --gray-200:   #e2e8f0;
+      --gray-400:   #94a3b8;
+      --gray-600:   #475569;
+      --gray-800:   #1e293b;
+      --gold:       #f59e0b;
+      --green:      #10b981;
+      --font-display: 'Outfit', sans-serif;
+      --font-body:    'Plus Jakarta Sans', sans-serif;
+      --radius:     14px;
+      --radius-lg:  22px;
+      --shadow-card: 0 4px 24px rgba(26,86,219,.08), 0 1px 4px rgba(0,0,0,.04);
+      --shadow-lg:   0 20px 60px rgba(26,86,219,.15);
+      --transition:  0.28s cubic-bezier(.4,0,.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--gray-800);
+      background: var(--white);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Scrollbar ──────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--gray-100); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* ── Nav ──────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%;
+      height: 68px;
+      background: rgba(10,22,40,.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      transition: background var(--transition);
+    }
+    nav.scrolled {
+      background: rgba(10,22,40,.97);
+      box-shadow: 0 4px 30px rgba(0,0,0,.35);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: -.5px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 900; color: #fff;
+    }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 2px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,.72);
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: color var(--transition), background var(--transition);
+    }
+    .nav-links a:hover {
+      color: var(--white);
+      background: rgba(255,255,255,.08);
+    }
+
+    .nav-ctas { display: flex; align-items: center; gap: 10px; }
+    .btn-nav-login {
+      color: rgba(255,255,255,.8);
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 500;
+      padding: 7px 18px;
+      border: 1.5px solid rgba(255,255,255,.18);
+      border-radius: 9px;
+      transition: all var(--transition);
+    }
+    .btn-nav-login:hover {
+      color: var(--white);
+      border-color: rgba(255,255,255,.5);
+      background: rgba(255,255,255,.06);
+    }
+    .btn-nav-cta {
+      background: var(--blue);
+      color: var(--white);
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 600;
+      padding: 7px 20px;
+      border-radius: 9px;
+      transition: all var(--transition);
+      box-shadow: 0 2px 12px rgba(26,86,219,.4);
+    }
+    .btn-nav-cta:hover {
+      background: var(--blue-deep);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(26,86,219,.55);
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column; gap: 5px; cursor: pointer;
+      background: none; border: none; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: all .3s ease;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed; top: 68px; left: 0; right: 0; z-index: 99;
+      background: rgba(10,22,40,.97);
+      backdrop-filter: blur(18px);
+      padding: 20px 5% 30px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      flex-direction: column; gap: 4px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 11px 16px;
+      border-radius: 10px;
+      transition: all var(--transition);
+    }
+    .mobile-menu a:hover { color: var(--white); background: rgba(255,255,255,.07); }
+    .mobile-menu-divider { height: 1px; background: rgba(255,255,255,.08); margin: 10px 0; }
+    .mobile-menu .btn-nav-cta { text-align: center; margin-top: 6px; padding: 12px; }
+
+    /* ── Hero ─────────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 40%, #1a2d6b 75%, var(--indigo) 100%);
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      padding: 120px 5% 80px;
+      overflow: hidden;
+    }
+
+    /* Animated grid overlay */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(26,86,219,.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,86,219,.07) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridScroll 20s linear infinite;
+    }
+    @keyframes gridScroll {
+      from { background-position: 0 0; }
+      to   { background-position: 60px 60px; }
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(26,86,219,.35) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      animation: float1 12s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(67,56,202,.3) 0%, transparent 70%);
+      bottom: -50px; right: -80px;
+      animation: float2 15s ease-in-out infinite;
+    }
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(59,130,246,.2) 0%, transparent 70%);
+      top: 40%; right: 20%;
+      animation: float1 18s ease-in-out infinite reverse;
+    }
+    @keyframes float1 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33% { transform: translate(40px,-30px) scale(1.05); }
+      66% { transform: translate(-20px,20px) scale(.97); }
+    }
+    @keyframes float2 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(-35px,25px) scale(1.08); }
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 780px; text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(26,86,219,.2);
+      border: 1px solid rgba(59,130,246,.35);
+      color: #93c5fd;
+      font-size: .82rem; font-weight: 600;
+      padding: 6px 16px; border-radius: 100px;
+      margin-bottom: 28px;
+      letter-spacing: .03em; text-transform: uppercase;
+      animation: fadeSlideDown .8s ease both;
+    }
+    .hero-badge-dot {
+      width: 7px; height: 7px;
+      background: var(--blue-light);
+      border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(.7); }
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -2px;
+      color: var(--white);
+      margin-bottom: 24px;
+      animation: fadeSlideDown .9s .1s ease both;
+    }
+    .hero h1 span {
+      background: linear-gradient(90deg, #60a5fa, #a78bfa, #60a5fa);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer {
+      from { background-position: 0 center; }
+      to   { background-position: 200% center; }
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: rgba(255,255,255,.65);
+      max-width: 580px; margin: 0 auto 36px;
+      line-height: 1.75;
+      animation: fadeSlideDown 1s .2s ease both;
+    }
+
+    .hero-ctas {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; flex-wrap: wrap;
+      animation: fadeSlideDown 1s .3s ease both;
+      margin-bottom: 52px;
+    }
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
+      text-decoration: none;
+      font-family: var(--font-display);
+      font-size: 1rem; font-weight: 700;
+      padding: 14px 32px; border-radius: 12px;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all var(--transition);
+      box-shadow: 0 4px 20px rgba(26,86,219,.5), inset 0 1px 0 rgba(255,255,255,.15);
+    }
+    .btn-primary:hover {
+      background: var(--blue-deep);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(26,86,219,.65);
+    }
+    .btn-primary svg { transition: transform var(--transition); }
+    .btn-primary:hover svg { transform: translateX(4px); }
+
+    .hero-trust {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px;
+      font-size: .82rem; color: rgba(255,255,255,.45);
+      flex-wrap: wrap;
+    }
+    .hero-trust span { display: flex; align-items: center; gap: 5px; }
+    .hero-trust-dot { color: rgba(255,255,255,.2); }
+
+    /* URL Demo */
+    .hero-demo {
+      position: relative; z-index: 2;
+      max-width: 640px; margin: 52px auto 0;
+      animation: fadeSlideUp 1s .5s ease both;
+    }
+    .hero-demo-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      backdrop-filter: blur(12px);
+    }
+    .url-transform {
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .url-row {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .url-label {
+      font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: rgba(255,255,255,.35);
+      min-width: 50px;
+    }
+    .url-value {
+      flex: 1;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: 'Courier New', monospace;
+      font-size: .82rem;
+      color: rgba(255,255,255,.7);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .url-value.short {
+      color: #60a5fa;
+      border-color: rgba(96,165,250,.3);
+      background: rgba(26,86,219,.12);
+      font-weight: 600;
+    }
+    .url-arrow {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--blue-light); font-size: 1.1rem;
+    }
+
+    .demo-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; margin-top: 22px;
+      background: rgba(255,255,255,.06);
+      border-radius: 10px; overflow: hidden;
+    }
+    .demo-stat {
+      background: rgba(255,255,255,.03);
+      padding: 16px 12px; text-align: center;
+    }
+    .demo-stat-num {
+      font-family: var(--font-display);
+      font-size: 1.3rem; font-weight: 800;
+      color: var(--white); line-height: 1;
+      margin-bottom: 4px;
+    }
+    .demo-stat-label {
+      font-size: .72rem; color: rgba(255,255,255,.4);
+      font-weight: 500;
+    }
+
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Section Commons ─────────────────────────────────────────── */
+    section { padding: 96px 5%; }
+    .section-alt { background: var(--gray-50); }
+
+    .section-tag {
+      display: inline-block;
+      font-size: .75rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: rgba(26,86,219,.08);
+      padding: 5px 14px; border-radius: 100px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 4vw, 3rem);
+      font-weight: 800; letter-spacing: -1px;
+      color: var(--gray-800);
+      line-height: 1.15; margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 1.05rem; color: var(--gray-600);
+      max-width: 540px; line-height: 1.7;
+    }
+    .section-header { margin-bottom: 60px; }
+    .section-header.center { text-align: center; }
+    .section-header.center .section-sub { margin: 0 auto; }
+
+    /* Reveal animation */
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    /* ── Products ─────────────────────────────────────────────────── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .product-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      position: relative; overflow: hidden;
+      transition: all var(--transition);
+      cursor: default;
+    }
+    .product-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(26,86,219,.03) 0%, transparent 60%);
+      opacity: 0; transition: opacity var(--transition);
+    }
+    .product-card:hover {
+      border-color: rgba(26,86,219,.25);
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    .product-card:hover::before { opacity: 1; }
+
+    .product-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 22px;
+    }
+    .product-icon.blue { background: rgba(26,86,219,.1); }
+    .product-icon.purple { background: rgba(139,92,246,.1); }
+    .product-icon.green { background: rgba(16,185,129,.1); }
+
+    .product-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.25rem; font-weight: 700;
+      color: var(--gray-800); margin-bottom: 12px;
+    }
+    .product-card p {
+      font-size: .92rem; color: var(--gray-600);
+      line-height: 1.7; margin-bottom: 24px;
+    }
+    .product-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--blue); font-size: .88rem; font-weight: 600;
+      text-decoration: none;
+      transition: gap var(--transition);
+    }
+    .product-link:hover { gap: 10px; }
+
+    /* ── Features Grid ────────────────────────────────────────────── */
+    .features-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .features-list {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .feature-item {
+      display: flex; gap: 14px;
+      padding: 20px;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      transition: all var(--transition);
+    }
+    .feature-item:hover {
+      border-color: rgba(26,86,219,.2);
+      box-shadow: var(--shadow-card);
+    }
+    .feature-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      border-radius: 9px;
+      background: rgba(26,86,219,.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+    }
+    .feature-item h4 {
+      font-family: var(--font-display);
+      font-size: .9rem; font-weight: 700;
+      color: var(--gray-800); margin-bottom: 3px;
+    }
+    .feature-item p { font-size: .8rem; color: var(--gray-600); line-height: 1.5; }
+
+    .features-visual {
+      position: relative;
+    }
+    .features-mockup {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a2d6b 100%);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(26,86,219,.2);
+    }
+    .mockup-header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 20px;
+    }
+    .mockup-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .mockup-dot.red { background: #ff5f57; }
+    .mockup-dot.yellow { background: #febc2e; }
+    .mockup-dot.green { background: #28c840; }
+
+    .mockup-stat-row {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 12px; margin-bottom: 16px;
+    }
+    .mockup-stat-box {
+      background: rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 14px; text-align: center;
+    }
+    .mockup-stat-box .num {
+      font-family: var(--font-display);
+      font-size: 1.4rem; font-weight: 800;
+      color: var(--white);
+    }
+    .mockup-stat-box .lbl {
+      font-size: .7rem; color: rgba(255,255,255,.4);
+      margin-top: 3px;
+    }
+    .mockup-chart {
+      background: rgba(255,255,255,.04);
+      border-radius: 10px;
+      padding: 16px;
+      height: 80px;
+      display: flex; align-items: flex-end;
+      gap: 5px;
+    }
+    .chart-bar {
+      flex: 1; border-radius: 3px 3px 0 0;
+      background: rgba(26,86,219,.4);
+      animation: growUp 1s ease both;
+    }
+    .chart-bar.high { background: var(--blue); }
+    @keyframes growUp {
+      from { transform: scaleY(0); transform-origin: bottom; }
+      to   { transform: scaleY(1); transform-origin: bottom; }
+    }
+
+    .mockup-link-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,.05);
+      border-radius: 8px; padding: 10px 14px;
+      margin-top: 12px;
+    }
+    .mockup-link-row .lnk {
+      font-size: .78rem; color: #60a5fa;
+      font-family: 'Courier New', monospace;
+    }
+    .mockup-link-row .clk {
+      font-size: .72rem; color: rgba(255,255,255,.4);
+    }
+
+    /* ── Integrations ─────────────────────────────────────────────── */
+    .integrations-section { background: var(--white); }
+    .integrations-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 16px; max-width: 640px; margin: 0 auto;
+    }
+    .integration-pill {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: .88rem; font-weight: 600;
+      color: var(--gray-700);
+      transition: all var(--transition);
+      cursor: default;
+    }
+    .integration-pill:hover {
+      border-color: var(--blue);
+      background: rgba(26,86,219,.04);
+      color: var(--blue);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(26,86,219,.1);
+    }
+    .integration-pill span { font-size: 1.1rem; }
+
+    /* ── Pricing ──────────────────────────────────────────────────── */
+    .pricing-section { background: var(--gray-50); }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; max-width: 960px; margin: 0 auto;
+    }
+    .pricing-card {
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      position: relative;
+      transition: all var(--transition);
+    }
+    .pricing-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .pricing-card.featured {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px var(--blue), var(--shadow-lg);
+    }
+    .pricing-badge {
+      position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+      background: var(--blue);
+      color: var(--white);
+      font-size: .72rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 4px 16px; border-radius: 100px;
+      white-space: nowrap;
+    }
+    .pricing-tier {
+      font-size: .8rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--gray-400);
+      margin-bottom: 8px;
+    }
+    .pricing-price {
+      display: flex; align-items: baseline; gap: 4px;
+      margin-bottom: 6px;
+    }
+    .pricing-price .amount {
+      font-family: var(--font-display);
+      font-size: 2.8rem; font-weight: 900;
+      color: var(--gray-800); line-height: 1;
+    }
+    .pricing-price .period {
+      font-size: .9rem; color: var(--gray-400);
+    }
+    .pricing-desc {
+      font-size: .88rem; color: var(--gray-600);
+      margin-bottom: 28px; line-height: 1.6;
+    }
+    .pricing-cta {
+      display: block; text-align: center;
+      text-decoration: none; font-weight: 700;
+      padding: 12px; border-radius: 10px;
+      font-size: .95rem;
+      transition: all var(--transition);
+      margin-bottom: 28px;
+    }
+    .pricing-cta.outline {
+      border: 1.5px solid var(--gray-200);
+      color: var(--gray-700);
+    }
+    .pricing-cta.outline:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+    .pricing-cta.filled {
+      background: var(--blue); color: var(--white);
+      box-shadow: 0 3px 14px rgba(26,86,219,.4);
+    }
+    .pricing-cta.filled:hover {
+      background: var(--blue-deep);
+      box-shadow: 0 5px 22px rgba(26,86,219,.55);
+      transform: translateY(-1px);
+    }
+    .pricing-divider {
+      height: 1px; background: var(--gray-100); margin-bottom: 20px;
+    }
+    .pricing-feature {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: .88rem; color: var(--gray-600);
+      margin-bottom: 10px; line-height: 1.5;
+    }
+    .pricing-check { color: var(--green); flex-shrink: 0; margin-top: 1px; }
+
+    /* ── CTA Banner ───────────────────────────────────────────────── */
+    .cta-section {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a2d6b 50%, var(--indigo) 100%);
+      text-align: center; padding: 100px 5%;
+      position: relative; overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(26,86,219,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,86,219,.06) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+    .cta-section h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900; letter-spacing: -1.5px;
+      color: var(--white);
+      position: relative; z-index: 1;
+      margin-bottom: 16px;
+    }
+    .cta-section p {
+      font-size: 1.05rem; color: rgba(255,255,255,.6);
+      max-width: 460px; margin: 0 auto 36px;
+      position: relative; z-index: 1; line-height: 1.7;
+    }
+    .cta-section .btn-primary { position: relative; z-index: 1; }
+    .cta-note {
+      position: relative; z-index: 1;
+      font-size: .82rem; color: rgba(255,255,255,.35);
+      margin-top: 16px;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.55);
+      padding: 60px 5% 30px;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 40px; margin-bottom: 48px;
+    }
+    .footer-brand p {
+      font-size: .88rem; line-height: 1.7;
+      max-width: 240px; margin-top: 14px;
+    }
+    .footer-social {
+      display: flex; gap: 10px; margin-top: 20px;
+    }
+    .social-btn {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.5);
+      text-decoration: none;
+      font-size: .85rem;
+      transition: all var(--transition);
+    }
+    .social-btn:hover {
+      background: rgba(26,86,219,.3);
+      border-color: rgba(26,86,219,.5);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    .footer-col h5 {
+      font-family: var(--font-display);
+      font-size: .85rem; font-weight: 700;
+      color: var(--white); letter-spacing: .02em;
+      margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 9px; }
+    .footer-col ul li a {
+      color: rgba(255,255,255,.5);
+      text-decoration: none; font-size: .88rem;
+      transition: color var(--transition);
+    }
+    .footer-col ul li a:hover { color: var(--white); }
+
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      font-size: .82rem;
+    }
+    .footer-bottom-links { display: flex; gap: 20px; }
+    .footer-bottom-links a {
+      color: rgba(255,255,255,.35);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .footer-bottom-links a:hover { color: rgba(255,255,255,.7); }
+
+    /* ── Responsive ───────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .features-layout { grid-template-columns: 1fr; gap: 48px; }
+      .features-list { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .integrations-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links, .nav-ctas { display: none; }
+      .hamburger { display: flex; }
+      section { padding: 64px 5%; }
+      .hero { padding: 100px 5% 60px; }
+      .demo-stats { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+      .features-list { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 380px; }
+      .integrations-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ─────────────────────────────────── -->
+  <nav id="navbar">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">H</div>
+      HitUrl
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#products">Solutions</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#">Blog</a></li>
+      <li><a href="#">Resources</a></li>
+    </ul>
+
+    <div class="nav-ctas">
+      <a href="https://hiturl.at/login" class="btn-nav-login">Login</a>
+      <a href="https://hiturl.at/register" class="btn-nav-cta">Get Started</a>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#products">Solutions</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#">Blog</a>
+    <a href="#">Resources</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="https://hiturl.at/login">Login</a>
+    <a href="https://hiturl.at/register" class="btn-nav-cta">Get Started Free</a>
+  </div>
+
+  <!-- ── Hero ───────────────────────────────────────── -->
+  <section class="hero" id="hero">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div style="position:relative;z-index:2;width:100%;max-width:900px;margin:0 auto;text-align:center;">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <div class="hero-badge-dot"></div>
+          Smart Link Management Platform
+        </div>
+        <h1>Get Your <span>Smart Link</span></h1>
+        <p>With HitURL, you can convert messy links into short, easy-to-understand URLs. Get more recognition with custom links and monitor link performance with integrated tracking.</p>
+        <div class="hero-ctas">
+          <a href="https://hiturl.at/register" class="btn-primary">
+            Get Started for Free
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          </a>
+        </div>
+        <div class="hero-trust">
+          <span>✓ Start free, upgrade later</span>
+          <span class="hero-trust-dot">·</span>
+          <span>✓ No credit card required</span>
+          <span class="hero-trust-dot">·</span>
+          <span>✓ Easy to use</span>
+        </div>
+      </div>
+
+      <div class="hero-demo">
+        <div class="hero-demo-card">
+          <div class="url-transform">
+            <div class="url-row">
+              <span class="url-label">LONG</span>
+              <div class="url-value">https://www.example.com/blog/category/article-title-goes-here?utm_source=newsletter&utm_medium=email</div>
+            </div>
+            <div class="url-arrow">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+            <div class="url-row">
+              <span class="url-label">SHORT</span>
+              <div class="url-value short">hiturl.at/xK4p9</div>
+            </div>
+          </div>
+
+          <div class="demo-stats">
+            <div class="demo-stat">
+              <div class="demo-stat-num" id="stat1">0</div>
+              <div class="demo-stat-label">Customers</div>
+            </div>
+            <div class="demo-stat">
+              <div class="demo-stat-num" id="stat2">0</div>
+              <div class="demo-stat-label">Links Powered</div>
+            </div>
+            <div class="demo-stat">
+              <div class="demo-stat-num" id="stat3">0</div>
+              <div class="demo-stat-label">Clicks Served</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Products ───────────────────────────────────── -->
+  <section id="products">
+    <div class="section-header center reveal">
+      <span class="section-tag">Solutions</span>
+      <h2 class="section-title">Everything You Need to<br/>Manage Your Links</h2>
+      <p class="section-sub">From simple URL shortening to advanced analytics and branded bio pages — HitUrl has you covered.</p>
+    </div>
+
+    <div class="products-grid">
+      <div class="product-card reveal reveal-delay-1">
+        <div class="product-icon blue">🔗</div>
+        <h3>Link Shortener</h3>
+        <p>Transform long, complex URLs into memorable short links. Leverage custom branded domains, advanced analytics, and geolocation targeting to maximize every click.</p>
+        <a href="https://hiturl.at" class="product-link">
+          Learn more
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        </a>
+      </div>
+
+      <div class="product-card reveal reveal-delay-2">
+        <div class="product-icon purple">📄</div>
+        <h3>Bio Pages</h3>
+        <p>Create stunning, mobile-optimized landing pages that consolidate all your important links in one place. Perfect for social media profiles and personal brands.</p>
+        <a href="https://hiturl.at" class="product-link">
+          Learn more
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        </a>
+      </div>
+
+      <div class="product-card reveal reveal-delay-3">
+        <div class="product-icon green">▦</div>
+        <h3>QR Codes</h3>
+        <p>Generate dynamic QR codes that can be customized with your brand colors and tracked in real-time. Update the destination URL without changing the QR code.</p>
+        <a href="https://hiturl.at" class="product-link">
+          Learn more
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Key Features ────────────────────────────────── -->
+  <section class="section-alt" id="features">
+    <div class="features-layout">
+      <div>
+        <div class="reveal">
+          <span class="section-tag">Features</span>
+          <h2 class="section-title">Powerful tools for<br/>every use case</h2>
+          <p class="section-sub" style="margin-bottom:40px;">Everything you need to create, manage, and analyze your links — all in one intelligent platform.</p>
+        </div>
+        <div class="features-list">
+          <div class="feature-item reveal reveal-delay-1">
+            <div class="feature-icon">🌐</div>
+            <div>
+              <h4>Custom Branded Domains</h4>
+              <p>Use your own domain for a professional look</p>
+            </div>
+          </div>
+          <div class="feature-item reveal reveal-delay-2">
+            <div class="feature-icon">📊</div>
+            <div>
+              <h4>Advanced Analytics</h4>
+              <p>Deep insights into every click and visitor</p>
+            </div>
+          </div>
+          <div class="feature-item reveal reveal-delay-1">
+            <div class="feature-icon">🗺️</div>
+            <div>
+              <h4>Geo & Device Targeting</h4>
+              <p>Route visitors by location or device type</p>
+            </div>
+          </div>
+          <div class="feature-item reveal reveal-delay-2">
+            <div class="feature-icon">👥</div>
+            <div>
+              <h4>Team Collaboration</h4>
+              <p>Manage links and access across your team</p>
+            </div>
+          </div>
+          <div class="feature-item reveal reveal-delay-1">
+            <div class="feature-icon">📱</div>
+            <div>
+              <h4>Deep Linking</h4>
+              <p>Route users directly into mobile apps</p>
+            </div>
+          </div>
+          <div class="feature-item reveal reveal-delay-2">
+            <div class="feature-icon">📣</div>
+            <div>
+              <h4>CTA Overlays</h4>
+              <p>Add call-to-action banners over any page</p>
+            </div>
+          </div>
+          <div class="feature-item reveal reveal-delay-1">
+            <div class="feature-icon">🔢</div>
+            <div>
+              <h4>Pixel Integration</h4>
+              <p>Connect Facebook, Google, and more pixels</p>
+            </div>
+          </div>
+          <div class="feature-item reveal reveal-delay-2">
+            <div class="feature-icon">⚙️</div>
+            <div>
+              <h4>Developer API</h4>
+              <p>Integrate HitUrl into any workflow</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="features-visual reveal">
+        <div class="features-mockup">
+          <div class="mockup-header">
+            <div class="mockup-dot red"></div>
+            <div class="mockup-dot yellow"></div>
+            <div class="mockup-dot green"></div>
+            <span style="font-size:.75rem;color:rgba(255,255,255,.3);margin-left:8px;">Analytics Dashboard</span>
+          </div>
+          <div class="mockup-stat-row">
+            <div class="mockup-stat-box">
+              <div class="num">2.96M</div>
+              <div class="lbl">Total Clicks</div>
+            </div>
+            <div class="mockup-stat-box">
+              <div class="num">45%</div>
+              <div class="lbl">Growth</div>
+            </div>
+            <div class="mockup-stat-box">
+              <div class="num">127</div>
+              <div class="lbl">Countries</div>
+            </div>
+          </div>
+          <div class="mockup-chart">
+            <div class="chart-bar" style="height:30%;animation-delay:.1s"></div>
+            <div class="chart-bar" style="height:45%;animation-delay:.15s"></div>
+            <div class="chart-bar" style="height:38%;animation-delay:.2s"></div>
+            <div class="chart-bar high" style="height:72%;animation-delay:.25s"></div>
+            <div class="chart-bar" style="height:55%;animation-delay:.3s"></div>
+            <div class="chart-bar high" style="height:90%;animation-delay:.35s"></div>
+            <div class="chart-bar" style="height:68%;animation-delay:.4s"></div>
+            <div class="chart-bar high" style="height:100%;animation-delay:.45s"></div>
+          </div>
+          <div class="mockup-link-row">
+            <span class="lnk">hiturl.at/campaign-q4</span>
+            <span class="clk">193,659 clicks</span>
+          </div>
+          <div class="mockup-link-row">
+            <span class="lnk">hiturl.at/product-launch</span>
+            <span class="clk">87,241 clicks</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Integrations ────────────────────────────────── -->
+  <section class="integrations-section" id="integrations">
+    <div class="section-header center reveal">
+      <span class="section-tag">Integrations</span>
+      <h2 class="section-title">Works with your<br/>favorite tools</h2>
+      <p class="section-sub">Connect HitUrl seamlessly with the platforms and tools you already use every day.</p>
+    </div>
+
+    <div class="integrations-grid">
+      <div class="integration-pill reveal reveal-delay-1"><span>💬</span> Slack</div>
+      <div class="integration-pill reveal reveal-delay-2"><span>⚡</span> Zapier</div>
+      <div class="integration-pill reveal reveal-delay-3"><span>🏷️</span> GTM</div>
+      <div class="integration-pill reveal reveal-delay-4"><span>📘</span> Facebook</div>
+      <div class="integration-pill reveal reveal-delay-1"><span>🔷</span> WordPress</div>
+      <div class="integration-pill reveal reveal-delay-2"><span>📈</span> GA4</div>
+      <div class="integration-pill reveal reveal-delay-3"><span>💼</span> LinkedIn</div>
+      <div class="integration-pill reveal reveal-delay-4"><span>📌</span> Pinterest</div>
+    </div>
+  </section>
+
+  <!-- ── Pricing ─────────────────────────────────────── -->
+  <section class="pricing-section" id="pricing">
+    <div class="section-header center reveal">
+      <span class="section-tag">Pricing</span>
+      <h2 class="section-title">Simple, transparent pricing</h2>
+      <p class="section-sub">Start free with no credit card required. Upgrade whenever you're ready to unlock more power.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Free -->
+      <div class="pricing-card reveal reveal-delay-1">
+        <div class="pricing-tier">Free</div>
+        <div class="pricing-price">
+          <span class="amount">$0</span>
+          <span class="period">/ month</span>
+        </div>
+        <p class="pricing-desc">Everything you need to get started with smart link management.</p>
+        <a href="https://hiturl.at/register" class="pricing-cta outline">Get Started Free</a>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Up to 50 short links</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Basic click analytics</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> 1 bio page</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Standard QR codes</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> HitUrl branded domain</div>
+      </div>
+
+      <!-- Pro -->
+      <div class="pricing-card featured reveal reveal-delay-2">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-tier">Pro</div>
+        <div class="pricing-price">
+          <span class="amount">$12</span>
+          <span class="period">/ month</span>
+        </div>
+        <p class="pricing-desc">For creators and marketers who need more control and insights.</p>
+        <a href="https://hiturl.at/register" class="pricing-cta filled">Start Pro Trial</a>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Unlimited short links</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Advanced analytics & reports</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Custom branded domains</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Dynamic QR codes with tracking</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> 5 bio pages</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Geolocation & device targeting</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Team collaboration (3 members)</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Pixel integrations</div>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="pricing-card reveal reveal-delay-3">
+        <div class="pricing-tier">Enterprise</div>
+        <div class="pricing-price">
+          <span class="amount" style="font-size:2.2rem;">Custom</span>
+        </div>
+        <p class="pricing-desc">For large teams and organizations that need enterprise-grade power and support.</p>
+        <a href="https://hiturl.at/contact" class="pricing-cta outline">Contact Sales</a>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Everything in Pro</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> White-label solution</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Full Developer API access</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Unlimited team members</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> SSO & advanced security</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Dedicated account manager</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> SLA & priority support</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA Banner ──────────────────────────────────── -->
+  <section class="cta-section">
+    <h2 class="reveal">Start shortening smarter today</h2>
+    <p class="reveal reveal-delay-1">Join 1,311+ customers who trust HitUrl to manage and track their links. Setup takes less than a minute.</p>
+    <a href="https://hiturl.at/register" class="btn-primary reveal reveal-delay-2">
+      Create Your Free Account
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+    </a>
+    <p class="cta-note reveal reveal-delay-3">No credit card required · Cancel anytime</p>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────── -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="color:white;text-decoration:none;">
+          <div class="nav-logo-icon">H</div>
+          HitUrl
+        </a>
+        <p>Convert messy URLs into smart, trackable short links. Grow your brand and measure what matters.</p>
+        <div class="footer-social">
+          <a href="#" class="social-btn" aria-label="Facebook">f</a>
+          <a href="#" class="social-btn" aria-label="Instagram">in</a>
+          <a href="#" class="social-btn" aria-label="LinkedIn">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h5>Solutions</h5>
+        <ul>
+          <li><a href="https://hiturl.at">Link Shortener</a></li>
+          <li><a href="https://hiturl.at">Bio Pages</a></li>
+          <li><a href="https://hiturl.at">QR Codes</a></li>
+          <li><a href="https://hiturl.at">Analytics</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="https://hiturl.at">Help Center</a></li>
+          <li><a href="https://hiturl.at">Developer API</a></li>
+          <li><a href="https://hiturl.at">Blog</a></li>
+          <li><a href="https://hiturl.at/contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="https://hiturl.at/privacy">Privacy Policy</a></li>
+          <li><a href="https://hiturl.at/terms">Terms & Conditions</a></li>
+          <li><a href="https://hiturl.at">Cookie Settings</a></li>
+          <li><a href="https://hiturl.at">Report Abuse</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2024 HitUrl. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="https://hiturl.at/privacy">Privacy</a>
+        <a href="https://hiturl.at/terms">Terms</a>
+        <a href="https://hiturl.at">Cookies</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Nav scroll state ──────────────────────────────
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // ── Mobile menu toggle ─────────────────────────────
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // ── Reveal on scroll ──────────────────────────────
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          revealObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => revealObserver.observe(el));
+
+    // ── Stat counter animation ─────────────────────────
+    function animateCounter(el, target, suffix = '', duration = 1600) {
+      let start = null;
+      const step = (timestamp) => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(eased * target);
+        el.textContent = current.toLocaleString() + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = target.toLocaleString() + suffix;
+      };
+      requestAnimationFrame(step);
+    }
+
+    let statsAnimated = false;
+    const heroObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !statsAnimated) {
+          statsAnimated = true;
+          setTimeout(() => animateCounter(document.getElementById('stat1'), 1311, '', 1400), 300);
+          setTimeout(() => animateCounter(document.getElementById('stat2'), 1811, '+', 1600), 500);
+          setTimeout(() => animateCounter(document.getElementById('stat3'), 193659, '+', 2000), 700);
+        }
+      });
+    }, { threshold: 0.4 });
+    heroObserver.observe(document.getElementById('hero'));
+
+    // ── Smooth scroll for anchor links ────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
